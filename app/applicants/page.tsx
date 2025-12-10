@@ -23,6 +23,7 @@ function calculateMatchPercentage(
 
 // --- 2. RAW DATA (Match is calculated automatically below) ---
 const rawApplicants = [
+  
   {
     id: 1,
     name: "Chloe Rivera",
