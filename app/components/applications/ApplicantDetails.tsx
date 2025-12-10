@@ -54,19 +54,17 @@ export interface Applicant {
 
 type Props = {
   applicant: Applicant;
+  onStatusChange: (status: string) => void;
 };
 
-export default function ApplicantDetails({ applicant }: Props) {
-  // --- 1. HOOKS FIRST (Always at the top) ---
-  const [status, setStatus] = useState<string>("");
+export default function ApplicantDetails({ applicant, onStatusChange }: Props) {
+  const [status, setStatus] = useState(applicant?.status || "");
   const [showDialog, setShowDialog] = useState(false);
+
   const [pendingStatus, setPendingStatus] = useState("");
 
-  // --- 2. EARLY RETURN AFTER HOOKS ---
-  // If no applicant, we stop here. But hooks have already "registered".
   if (!applicant) return null;
 
-  // --- 3. DATA MAPPING (Safe to do now) ---
   const {
     name,
     role,
@@ -85,7 +83,6 @@ export default function ApplicantDetails({ applicant }: Props) {
     match,
   } = applicant;
 
-  // --- 4. OPTIONS CONFIGURATION ---
   const initialOptions = [
     {
       key: "Selected",
@@ -118,12 +115,22 @@ export default function ApplicantDetails({ applicant }: Props) {
 
   const selectedStatus = allStatusOptions.find((s) => s.key === status);
 
+  const handleConfirmStatus = (newStatus: string) => {
+    setStatus(newStatus);
+    onStatusChange(newStatus);
+    setPendingStatus("success");
+  };
+
+  const handleFinalClose = () => {
+    setShowDialog(false);
+    setPendingStatus("");
+  };
+
   return (
-    <div className=" w-[100%] bg-white  rounded-2xl shadow-sm border border-gray-200 p-6 overflow-y-auto sticky top-6 scrollbar-hide">
-      {/* PROFILE IMAGE */}
+    <div className="w-85 h-163 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-y-auto sticky top-6 scrollbar-hide">
       <div className="flex flex-col items-center">
         <div className="relative flex flex-col items-center">
-          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange-100 via-orange-200 to-orange-400 shadow-xl flex items-center justify-center -mt-2">
+          <div className="w-32 h-32 rounded-full bg-linear-to-br from-orange-100 via-orange-200 to-orange-400 shadow-xl flex items-center justify-center -mt-2">
             <Image
               src={photo}
               alt={name}
@@ -133,7 +140,7 @@ export default function ApplicantDetails({ applicant }: Props) {
             />
           </div>
 
-          <div className="absolute left-1/2 -bottom-6 -translate-x-1/2 z-20 bg-gradient-to-br from-orange-50 to-orange-200 border border-orange-300 px-3 py-2 rounded-full shadow-lg flex items-center gap-1 whitespace-nowrap">
+          <div className="absolute left-1/2 -bottom-6 -translate-x-1/2 z-20 bg-linear-to-br from-orange-50 to-orange-200 border border-orange-300 px-3 py-2 rounded-full shadow-lg flex items-center gap-1 whitespace-nowrap">
             <MdStars className="text-orange-500 text-lg" />
             <span className="text-sm font-semibold text-orange-700">
               CADD Score: {score}%
@@ -146,9 +153,8 @@ export default function ApplicantDetails({ applicant }: Props) {
         </h2>
         <p className="text-gray-500 text-sm text-center">{designation}</p>
 
-        {/* STATUS ACTIONS */}
         <div className="mt-4 w-full flex justify-center">
-          {!status && (
+          {!status || status === "Pending" || status === "Reviewing" ? (
             <div className="flex justify-center gap-2">
               {initialOptions.map((opt) => (
                 <button
@@ -164,9 +170,7 @@ export default function ApplicantDetails({ applicant }: Props) {
                 </button>
               ))}
             </div>
-          )}
-
-          {status && (
+          ) : (
             <div className="flex justify-center items-center gap-3 mt-2">
               <span
                 className={`px-4 py-2 rounded-xl border text-sm font-medium shadow-sm capitalize flex items-center gap-2 ${selectedStatus?.class}`}
@@ -190,7 +194,6 @@ export default function ApplicantDetails({ applicant }: Props) {
 
       <div className="my-6 border-b border-gray-100"></div>
 
-      {/* CONTACT INFO */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <FaAddressBook className="text-orange-500" /> Contact Information
@@ -208,7 +211,9 @@ export default function ApplicantDetails({ applicant }: Props) {
             className="flex items-center gap-3 p-1 rounded-xl transition cursor-point"
           >
             <FaEnvelope className="text-gray-400 text-sm" />
-            <p className="text-gray-600 text-sm break-all hover:text-orange-500 hover:underline">{email}</p>
+            <p className="text-gray-600 text-sm break-all hover:text-orange-500 hover:underline">
+              {email}
+            </p>
           </a>
           <a
             href={linkedin}
@@ -226,7 +231,6 @@ export default function ApplicantDetails({ applicant }: Props) {
 
       <div className="my-6 border-b border-gray-100"></div>
 
-      {/* SKILL SECTION */}
       <div className="mt-6">
         <div className="flex items-center gap-2 mb-4">
           <FaChartPie className="text-orange-500 text-lg" />
@@ -257,30 +261,6 @@ export default function ApplicantDetails({ applicant }: Props) {
           })}
         </div>
 
-        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-          User Skills
-        </h3>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {userSkills.map((skill) => {
-            const matched = requiredSkills.includes(skill);
-
-            return (
-            <div
-              key={skill}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-medium ${
-                  matched
-                    ? "bg-purple-50 border-purple-200 text-purple-700"
-                    : "bg-gray-50 border-gray-200 text-gray-500"
-                }`}
-              >
-                {skill}
-                {matched && <FaCheck className="text-purple-600 text-[10px]" />}
-              </div>
-             );
-          })}
-        </div>
-
-        {/* Skill Match Bar */}
         <div className="mt-4 bg-gray-50 p-3 rounded-xl border border-gray-100">
           <div className="flex justify-between items-center mb-1">
             <p className="text-xs font-bold text-gray-600">Match Score</p>
@@ -293,20 +273,10 @@ export default function ApplicantDetails({ applicant }: Props) {
             ></div>
           </div>
         </div>
-
-        <p className="text-gray-700 text-xs mt-2">
-          Candidate has{" "}
-          <span className="font-bold">
-            {requiredSkills.filter((s) => userSkills.includes(s)).length}
-          </span>{" "}
-          out of <span className="font-bold">{requiredSkills.length}</span>{" "}
-          required skills.
-        </p>
       </div>
 
       <div className="my-6 border-b border-gray-100"></div>
 
-      {/* EDUCATION LIST */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <FaGraduationCap className="text-orange-500" /> Education
@@ -315,9 +285,9 @@ export default function ApplicantDetails({ applicant }: Props) {
           {education.map((edu, index) => (
             <div key={index} className="relative">
               <div className="absolute -left-6 top-1 flex items-center gap-1">
-                <span className="h-[2px] w-1 bg-orange-300"></span>
+                <span className="h-0.5 w-1 bg-orange-300"></span>
                 <FaBookOpenReader className="text-orange-500 text-xs" />
-              </div>{" "}
+              </div>
               <div className="flex justify-between items-start mb-1">
                 <h4 className="font-bold text-gray-900 text-sm leading-tight w-2/3">
                   {edu.degree || edu.title}
@@ -336,7 +306,6 @@ export default function ApplicantDetails({ applicant }: Props) {
 
       <div className="my-6 border-b border-gray-100"></div>
 
-      {/* EXPERIENCE LIST */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <FaBriefcase className="text-orange-500" /> Work Experience
@@ -345,9 +314,9 @@ export default function ApplicantDetails({ applicant }: Props) {
           {experience.map((exp, index) => (
             <div key={index} className="relative">
               <div className="absolute -left-6 top-1 flex items-center gap-1">
-                <span className="h-[2px] w-1 bg-orange-300"></span>
+                <span className="h-0.5 w-1 bg-orange-300"></span>
                 <FaUserTie className="text-orange-500 text-xs" />
-              </div>{" "}
+              </div>
               <div className="flex justify-between items-start mb-1">
                 <h4 className="font-bold text-gray-900 text-sm leading-tight w-2/3">
                   {exp.designation || exp.title}
@@ -367,97 +336,153 @@ export default function ApplicantDetails({ applicant }: Props) {
         </div>
       </div>
 
-      {/* CONFIRMATION DIALOG */}
       {showDialog && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100] backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-2xl shadow-2xl w-80 border border-gray-100 transform transition-all scale-100">
-            <h2 className="text-lg font-bold text-gray-900 mb-2 text-center">
-              {pendingStatus === "edit" ? "Edit Status" : "Confirm Action"}
-            </h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-999 backdrop-blur-sm p-4">
+          <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 transform transition-all scale-100 relative">
+            {pendingStatus === "success" ? (
+              <div className="flex flex-col items-center animate-fadeIn">
+                {status === "Selected" ? (
+                  <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
+                    <FaCheck size={32} />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-6">
+                    <FaTimes size={32} />
+                  </div>
+                )}
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                  Status Updated!
+                </h2>
 
-            {pendingStatus !== "edit" &&
-              !pendingStatus.startsWith("edit-confirm-") && (
-                <>
-                  <p className="text-sm text-gray-500 text-center mb-6">
-                    Mark this candidate as{" "}
-                    <span className="font-bold text-gray-900 capitalize">
-                      {pendingStatus}
-                    </span>
-                    ?
+                <div className="flex flex-col items-center bg-gray-50 rounded-2xl p-6 w-full border border-gray-100 mb-6">
+                  <Image
+                    src={photo}
+                    alt={name}
+                    width={80}
+                    height={80}
+                    className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md mb-3"
+                  />
+                  <h3 className="text-xl font-bold text-gray-900 text-center">
+                    {name}
+                  </h3>
+                  <p className="text-gray-500 font-medium text-sm text-center">
+                    {designation}
                   </p>
-                  <div className="flex gap-3">
+
+                  <div
+                    className={`mt-3 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${
+                      status == "Selected"
+                        ? "bg-green-50 border-green-400 text-green-700"
+                        : "bg-red-50 border-red-400 text-red-700"
+                    }`}
+                  >
+                    {status}
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleFinalClose}
+                  className="w-full py-3.5 bg-orange-500 hover:bg-orange-600 shadow-red-200 text-white rounded-xl text-base font-semibold transition-all shadow-lg hover:shadow-gray-300"
+                >
+                  OK
+                </button>
+              </div>
+            ) : (
+              <div className="animate-fadeIn">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">
+                  {pendingStatus === "edit" ? "Edit Status" : "Confirm Action"}
+                </h2>
+
+                {pendingStatus !== "edit" &&
+                  !pendingStatus.startsWith("edit-confirm-") && (
+                    <>
+                      <p className="text-gray-500 text-center mb-8 text-base">
+                        Are you sure you want to mark this candidate as <br />
+                        <span className="font-bold text-gray-900 capitalize text-lg">
+                          {pendingStatus}
+                        </span>
+                        ?
+                      </p>
+                      <div className="flex gap-4">
+                        <button
+                          onClick={() => setShowDialog(false)}
+                          className="flex-1 py-3.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-200 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleConfirmStatus(pendingStatus)}
+                          className={`flex-1 py-3.5 text-white rounded-xl text-sm font-bold shadow-lg transition-transform hover:scale-[1.02] ${
+                            pendingStatus === "Rejected"
+                              ? "bg-red-600 hover:bg-red-700 shadow-red-200"
+                              : "bg-green-600 hover:bg-green-700 shadow-green-200"
+                          }`}
+                        >
+                          Confirm
+                        </button>
+                      </div>
+                    </>
+                  )}
+
+                {pendingStatus === "edit" && (
+                  <div className="flex flex-col gap-3 mt-4">
+                    <p className="text-gray-500 text-sm text-center mb-2">
+                      Please select the new status for this candidate below:
+                    </p>
+
+                    {allStatusOptions
+                      .filter((opt) => opt.key !== status)
+                      .map((opt) => (
+                        <button
+                          key={opt.key}
+                          onClick={() =>
+                            setPendingStatus(`edit-confirm-${opt.key}`)
+                          }
+                          className={`w-full py-4 rounded-xl border text-sm font-bold ${opt.class} flex items-center justify-center gap-3 transition-transform hover:scale-[1.01]`}
+                        >
+                          <span className="text-lg">{opt.icon}</span>{" "}
+                          {opt.label}
+                        </button>
+                      ))}
                     <button
                       onClick={() => setShowDialog(false)}
-                      className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors"
+                      className="w-full py-3 bg-gray-100 rounded-xl text-sm font-semibold mt-2 hover:bg-gray-200 text-gray-600"
                     >
                       Cancel
                     </button>
-                    <button
-                      onClick={() => {
-                        setStatus(pendingStatus);
-                        setShowDialog(false);
-                      }}
-                      className="flex-1 py-2.5 bg-orange-600 text-white rounded-xl text-sm font-semibold hover:bg-orange-700 transition-colors shadow-lg shadow-orange-200"
-                    >
-                      Confirm
-                    </button>
                   </div>
-                </>
-              )}
+                )}
 
-            {/* Edit Options */}
-            {pendingStatus === "edit" && (
-              <div className="flex flex-col gap-2">
-                {allStatusOptions
-                  .filter((opt) => opt.key !== status)
-                  .map((opt) => (
-                    <button
-                      key={opt.key}
-                      onClick={() =>
-                        setPendingStatus(`edit-confirm-${opt.key}`)
-                      }
-                      className={`w-full py-2 rounded-lg border text-sm ${opt.class} flex items-center justify-center gap-2`}
-                    >
-                      {opt.icon} {opt.label}
-                    </button>
-                  ))}
-                <button
-                  onClick={() => setShowDialog(false)}
-                  className="w-full py-2 bg-gray-100 rounded-lg text-sm mt-2"
-                >
-                  Cancel
-                </button>
+                {pendingStatus.startsWith("edit-confirm-") && (
+                  <>
+                    <p className="text-gray-500 text-center mb-8 text-base">
+                      Change status to <br />
+                      <span className="font-bold text-gray-900 capitalize text-lg">
+                        {pendingStatus.replace("edit-confirm-", "")}
+                      </span>
+                      ?
+                    </p>
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => setPendingStatus("edit")}
+                        className="flex-1 py-3.5 bg-gray-100 rounded-xl text-sm font-bold text-gray-600"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleConfirmStatus(
+                            pendingStatus.replace("edit-confirm-", "")
+                          )
+                        }
+                        className="flex-1 py-3.5 bg-orange-600 text-white rounded-xl text-sm font-bold hover:bg-orange-700 shadow-lg shadow-orange-200"
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
-            )}
-
-            {/* Edit Confirmation */}
-            {pendingStatus.startsWith("edit-confirm-") && (
-              <>
-                <p className="text-sm text-gray-500 text-center mb-6">
-                  Change status to{" "}
-                  <span className="font-bold text-gray-900 capitalize">
-                    {pendingStatus.replace("edit-confirm-", "")}
-                  </span>
-                  ?
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setPendingStatus("edit")}
-                    className="flex-1 py-2 bg-gray-100 rounded-lg text-sm"
-                  >
-                    Back
-                  </button>
-                  <button
-                    onClick={() => {
-                      setStatus(pendingStatus.replace("edit-confirm-", ""));
-                      setShowDialog(false);
-                    }}
-                    className="flex-1 py-2 bg-orange-600 text-white rounded-lg text-sm"
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </>
             )}
           </div>
         </div>
