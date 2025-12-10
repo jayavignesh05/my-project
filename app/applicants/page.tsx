@@ -1,27 +1,23 @@
 "use client";
 import React, { useState } from "react";
-import ApplicantsList, {
+import ApplicantsList from "../components/applications/ApplicantsList";
+import ApplicantDetails, {
   Applicant,
-} from "../components/applications/ApplicantsList";
-import ApplicantDetails from "../components/applications/ApplicantDetails";
+} from "../components/applications/ApplicantDetails";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-// --- 1. HELPER FUNCTION ---
 function calculateMatchPercentage(
   requiredSkills: string[],
   userSkills: string[]
 ) {
   if (!requiredSkills || !requiredSkills.length) return 0;
-
   const matched = requiredSkills.filter((skill) =>
     userSkills.includes(skill)
   ).length;
-
   return Math.round((matched / requiredSkills.length) * 100);
 }
 
-// --- 2. RAW DATA (Match is calculated automatically below) ---
 const rawApplicants = [
   {
     id: 1,
@@ -32,10 +28,9 @@ const rawApplicants = [
     linkedin: "linkedin.com/in/chloerivera",
     location: "Austin, TX",
     score: 78,
-    status: "Selected",
+    status: "Pending",
     avatar:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150",
-
     requiredSkills: [
       "Figma",
       "Sketch",
@@ -43,8 +38,7 @@ const rawApplicants = [
       "Wireframing",
       "User Research",
     ],
-    skills: ["Figma", "Sketch", "Adobe XD", "Prototyping"], // Matches 4/5 = 80%? No, Adobe XD is extra. Matches 3 (Figma, Sketch, Prototyping) out of 5 = 60%
-
+    skills: ["Figma", "Sketch", "Adobe XD", "Prototyping"],
     education: [
       {
         id: 1,
@@ -75,10 +69,8 @@ const rawApplicants = [
     status: "Selected",
     avatar:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150",
-
     requiredSkills: ["React", "TypeScript", "Node.js", "AWS", "Docker"],
-    skills: ["Python", "TensorFlow", "React", "Node.js"], // Matches 2 (React, Node) out of 5 = 40%
-
+    skills: ["Python", "TensorFlow", "React", "Node.js"],
     education: [
       {
         id: 1,
@@ -112,10 +104,9 @@ const rawApplicants = [
     linkedin: "linkedin.com/in/elenavance",
     location: "New York, NY",
     score: 90,
-    status: "Rejected",
+    status: "Pending",
     avatar:
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150&h=150",
-
     requiredSkills: [
       "React",
       "TypeScript",
@@ -124,8 +115,7 @@ const rawApplicants = [
       "Jest",
       "CSS",
     ],
-    skills: ["TypeScript", "Node.js", "GraphQL", "Jest", "React"], // Matches 5 out of 6 = 83%
-
+    skills: ["TypeScript", "Node.js", "GraphQL", "Jest", "React"],
     education: [
       {
         id: 1,
@@ -168,10 +158,9 @@ const rawApplicants = [
     linkedin: "linkedin.com/in/leokim",
     location: "Boston, MA",
     score: 82,
-    status: "Pending",
+    status: "Rejected",
     avatar:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150",
-
     requiredSkills: [
       "Network Security",
       "Python",
@@ -179,8 +168,7 @@ const rawApplicants = [
       "Ethical Hacking",
       "SIEM",
     ],
-    skills: ["Network Security", "Python"], // Matches 2 out of 5 = 40%
-
+    skills: ["Network Security", "Python"],
     education: [
       {
         id: 1,
@@ -200,22 +188,228 @@ const rawApplicants = [
       },
     ],
   },
+  {
+    id: 5,
+    name: "Marcus Johnson",
+    role: "Backend Engineer",
+    email: "marcus.j@example.com",
+    phone: "555-0107",
+    linkedin: "linkedin.com/in/marcusj",
+    location: "Chicago, IL",
+    score: 88,
+    status: "Selected",
+    avatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150&h=150",
+    requiredSkills: ["Java", "Spring Boot", "Microservices", "SQL", "Docker"],
+    skills: ["Java", "Spring Boot", "SQL", "Hibernate", "Docker"],
+    education: [
+      {
+        id: 1,
+        title: "B.S. Software Engineering",
+        institution: "University of Illinois",
+        date: "2015 - 2019",
+      },
+    ],
+    experience: [
+      {
+        id: 1,
+        title: "Backend Dev",
+        institution: "FinTech Global",
+        date: "2019 - 2023",
+        description: "Optimized API latency by 40% using Redis caching.",
+      },
+    ],
+  },
+  {
+    id: 6,
+    name: "Priya Patel",
+    role: "Data Scientist",
+    email: "priya.p@example.com",
+    phone: "555-0108",
+    linkedin: "linkedin.com/in/priyapatel",
+    location: "San Francisco, CA",
+    score: 92,
+    status: "Pending",
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150",
+    requiredSkills: ["Python", "Machine Learning", "Pandas", "SQL", "Tableau"],
+    skills: ["Python", "R", "Pandas", "SQL", "PowerBI"],
+    education: [
+      {
+        id: 1,
+        title: "M.S. Data Science",
+        institution: "Stanford University",
+        date: "2019 - 2021",
+      },
+    ],
+    experience: [
+      {
+        id: 1,
+        title: "Data Analyst",
+        institution: "CloudData Inc",
+        date: "2021 - 2024",
+        description: "Built predictive models for customer churn analysis.",
+      },
+    ],
+  },
+  {
+    id: 7,
+    name: "James Wilson",
+    role: "DevOps Engineer",
+    email: "james.w@example.com",
+    phone: "555-0109",
+    linkedin: "linkedin.com/in/jameswilson",
+    location: "Denver, CO",
+    score: 85,
+    status: "Pending",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150",
+    requiredSkills: ["AWS", "Kubernetes", "Terraform", "CI/CD", "Linux"],
+    skills: ["AWS", "Docker", "Jenkins", "Linux", "Bash"],
+    education: [
+      {
+        id: 1,
+        title: "B.S. Network Engineering",
+        institution: "Colorado State",
+        date: "2016 - 2020",
+      },
+    ],
+    experience: [
+      {
+        id: 1,
+        title: "SysAdmin",
+        institution: "ServerCo",
+        date: "2020 - 2022",
+        description: "Managed on-premise servers and migrated to AWS.",
+      },
+    ],
+  },
+  {
+    id: 8,
+    name: "Sophia Martinez",
+    role: "Product Manager",
+    email: "sophia.m@example.com",
+    phone: "555-0110",
+    linkedin: "linkedin.com/in/sophiam",
+    location: "Miami, FL",
+    score: 75,
+    status: "Rejected",
+    avatar:
+      "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=150&h=150",
+    requiredSkills: [
+      "Agile",
+      "Jira",
+      "Roadmapping",
+      "StakePendinger Management",
+      "SQL",
+    ],
+    skills: ["Agile", "Jira", "Scrum", "Product Strategy"],
+    education: [
+      {
+        id: 1,
+        title: "MBA",
+        institution: "University of Miami",
+        date: "2017 - 2019",
+      },
+    ],
+    experience: [
+      {
+        id: 1,
+        title: "Junior PM",
+        institution: "StartUp Hub",
+        date: "2019 - 2021",
+        description: "Managed the launch of the mobile application.",
+      },
+    ],
+  },
+  {
+    id: 9,
+    name: "Lucas Garcia",
+    role: "Mobile Developer",
+    email: "lucas.g@example.com",
+    phone: "555-0111",
+    linkedin: "linkedin.com/in/lucasg",
+    location: "Los Angeles, CA",
+    score: 80,
+    status: "Pending",
+    avatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150&h=150",
+    requiredSkills: ["Swift", "iOS", "React Native", "Firebase", "Git"],
+    skills: ["Swift", "Xcode", "iOS SDK", "Git"],
+    education: [
+      {
+        id: 1,
+        title: "B.S. Computer Science",
+        institution: "UCLA",
+        date: "2018 - 2022",
+      },
+    ],
+    experience: [
+      {
+        id: 1,
+        title: "iOS Intern",
+        institution: "AppWorks",
+        date: "2022 - 2023",
+        description: "Assisted in bug fixing and UI implementation.",
+      },
+    ],
+  },
+  {
+    id: 10,
+    name: "Emily Clark",
+    role: "QA Engineer",
+    email: "emily.c@example.com",
+    phone: "555-0112",
+    linkedin: "linkedin.com/in/emilyc",
+    location: "Portland, OR",
+    score: 89,
+    status: "Pending",
+    avatar:
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150&h=150",
+    requiredSkills: ["Selenium", "Java", "TestNG", "Jira", "Automation"],
+    skills: ["Selenium", "Java", "Manual Testing", "Postman", "Jira"],
+    education: [
+      {
+        id: 1,
+        title: "B.S. Info Systems",
+        institution: "Portland State",
+        date: "2017 - 2021",
+      },
+    ],
+    experience: [
+      {
+        id: 1,
+        title: "QA Tester",
+        institution: "SoftServe",
+        date: "2021 - 2024",
+        description: "Wrote automated test scripts for web applications.",
+      },
+    ],
+  },
 ];
 
-// --- 3. PROCESSED DATA (Calculates Match) ---
-const applicantsData: Applicant[] = rawApplicants.map((applicant) => ({
-  ...applicant,
-  match: calculateMatchPercentage(applicant.requiredSkills, applicant.skills),
+const initialApplicants: Applicant[] = rawApplicants.map((app) => ({
+  ...app,
+  match: calculateMatchPercentage(app.requiredSkills, app.skills),
 }));
 
 const ApplicantsPage = () => {
-  const [selectedApplicant, setSelectedApplicant] = useState<Applicant>(
-    applicantsData[0]
-  );
+  const [allApplicants, setAllApplicants] =
+    useState<Applicant[]>(initialApplicants);
+  const [selectedId, setSelectedId] = useState<number>(initialApplicants[0].id);
+
+  const selectedApplicant =
+    allApplicants.find((a) => a.id === selectedId) || allApplicants[0];
+
+  const handleStatusUpdate = (newStatus: string) => {
+    const updatedList = allApplicants.map((app) =>
+      app.id === selectedId ? { ...app, status: newStatus } : app
+    );
+    setAllApplicants(updatedList);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 font-sans text-gray-900 overflow-hidden flex flex-col">
-      {/* Page Header */}
       <div className="mb-4 shrink-0">
         <Link
           href="/"
@@ -230,25 +424,26 @@ const ApplicantsPage = () => {
         <div className="flex items-baseline gap-2">
           <h1 className="text-2xl font-bold text-gray-900">Student List</h1>
           <span className="text-sm text-gray-500 font-medium">
-            ({applicantsData.length} Candidates)
+            ({allApplicants.length} Candidates)
           </span>
         </div>
       </div>
 
-      {/* MAIN LAYOUT: Side by Side with Gap */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start h-full overflow-hidden">
-        {/* Left Side: List (Takes available width) */}
+      <div className="flex flex-col lg:flex-row gap-6 items-start h-163 overflow-hidden">
         <div className="flex-1 h-full min-w-0">
           <ApplicantsList
-            applicants={applicantsData}
-            selectedId={selectedApplicant.id}
-            onSelect={setSelectedApplicant}
+            applicants={allApplicants}
+            selectedId={selectedId}
+            onSelect={(app) => setSelectedId(app.id)}
           />
         </div>
 
-        {/* Right Side: Details (Fixed Width, Sticky) */}
-        <div className="shrink-0 w-full lg:w-[350px]">
-          <ApplicantDetails applicant={selectedApplicant} />
+        <div className="shrink-0 w-full lg:w-[350px] h-full">
+          <ApplicantDetails
+            key={selectedApplicant.id}
+            applicant={selectedApplicant}
+            onStatusChange={handleStatusUpdate}
+          />
         </div>
       </div>
     </div>
