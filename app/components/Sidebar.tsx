@@ -1,10 +1,13 @@
+"use client"; // <--- 1. Add this at the top
 import React from "react";
-import { Users, Briefcase, LogOut } from "lucide-react";
+// Added 'Globe' icon for the portal
+import { Briefcase, LogOut, Globe } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // <--- 2. Import this
 
 const Sidebar = () => {
-  const activePage = "jobs";
-
+  // You can change this string to test different active states
+  const pathname = usePathname(); // <--- 3. Get the real current path
   return (
     <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col p-6 fixed left-0 top-0">
       <div className="mb-12 flex flex-col items-start font-bold text-red-700 leading-tight">
@@ -16,11 +19,19 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex-1 space-y-2">
-        <NavItem icon={<Users size={20} />} label="Candidates" />
         <NavItem
           icon={<Briefcase size={20} />}
           label="Jobs Post"
-          isActive={activePage === "jobs"}
+          href="/"
+          isActive={pathname === "/"}
+        />
+
+        {/* --- NEW ITEM ADDED HERE --- */}
+        <NavItem
+          icon={<Globe size={20} />}
+          label="Jobs Portal"
+          href="/jobs-portal" // This must match the folder name inside 'app'
+          isActive={pathname === "/jobs-portal"}
         />
       </nav>
 
@@ -34,14 +45,17 @@ const Sidebar = () => {
   );
 };
 
+// Updated to accept 'href' so links actually work
 const NavItem = ({
   icon,
   label,
   isActive,
+  href = "#", // Default to # if no link provided
 }: {
   icon: React.ReactNode;
   label: string;
   isActive?: boolean;
+  href?: string;
 }) => {
   const baseClasses =
     "flex items-center space-x-3 p-3 rounded-lg font-medium transition-colors cursor-pointer";
@@ -51,7 +65,7 @@ const NavItem = ({
 
   return (
     <Link
-      href="#"
+      href={href}
       className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}
     >
       {icon}

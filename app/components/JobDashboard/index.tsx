@@ -9,14 +9,15 @@ import {
   ArrowUpAZ,
   ArrowDownZA,
 } from "lucide-react";
-
 import FilterBar from "./FilterBar";
 import StatsCard from "./StatsCard";
 import JobCard from "./JobCard";
 import JobTabs from "./JobTabs";
 
-const jobList = [
+// INITIAL DATA (Adding IDs for easier updating)
+const initialJobList = [
   {
+    id: 1,
     role: "Senior Frontend Developer",
     location: "San Francisco, CA",
     type: "Full time",
@@ -24,6 +25,7 @@ const jobList = [
     applicants: 39,
   },
   {
+    id: 2,
     role: "Product Manager",
     location: "New York, NY",
     type: "Internship",
@@ -31,6 +33,7 @@ const jobList = [
     applicants: 0,
   },
   {
+    id: 3,
     role: "Data Scientist",
     location: "Austin, TX",
     type: "Full time",
@@ -38,6 +41,7 @@ const jobList = [
     applicants: 20,
   },
   {
+    id: 4,
     role: "UX/UI Designer",
     location: "Remote",
     type: "Contract",
@@ -45,6 +49,7 @@ const jobList = [
     applicants: 148,
   },
   {
+    id: 5,
     role: "Backend Engineer",
     location: "London, UK",
     type: "Full time",
@@ -52,6 +57,7 @@ const jobList = [
     applicants: 12,
   },
   {
+    id: 6,
     role: "Digital Marketing Specialist",
     location: "Chicago, IL",
     type: "Part time",
@@ -59,6 +65,7 @@ const jobList = [
     applicants: 0,
   },
   {
+    id: 7,
     role: "DevOps Engineer",
     location: "Remote",
     type: "Contract",
@@ -66,6 +73,7 @@ const jobList = [
     applicants: 56,
   },
   {
+    id: 8,
     role: "Sales Representative",
     location: "Miami, FL",
     type: "Full time",
@@ -73,6 +81,7 @@ const jobList = [
     applicants: 5,
   },
   {
+    id: 9,
     role: "Human Resources Manager",
     location: "Seattle, WA",
     type: "Full time",
@@ -80,6 +89,7 @@ const jobList = [
     applicants: 0,
   },
   {
+    id: 10,
     role: "Graphic Designer",
     location: "Los Angeles, CA",
     type: "Freelance",
@@ -89,21 +99,34 @@ const jobList = [
 ];
 
 const JobDashboard = () => {
+  // --- 1. STATE MANAGEMENT ---
+  const [jobs, setJobs] = useState(initialJobList); // Use State for Jobs
+
   const [searchTerm, setSearchTerm] = useState("");
   const [locationTerm, setLocationTerm] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("All");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const counts = jobList.reduce((acc, job) => {
+  // --- 2. UPDATE STATUS FUNCTION ---
+  const handleJobStatusChange = (id: number, newStatus: string) => {
+    const updatedJobs = jobs.map((job) =>
+      job.id === id ? { ...job, status: newStatus } : job
+    );
+    setJobs(updatedJobs); // Updates state -> Triggers re-render -> Updates Tabs & Counts
+  };
+
+  // --- 3. DYNAMIC COUNTS ---
+  const counts = jobs.reduce((acc, job) => {
     acc["All"] = (acc["All"] || 0) + 1;
     acc[job.status] = (acc[job.status] || 0) + 1;
     return acc;
   }, {} as { [key: string]: number });
 
-  const totalApplicants = jobList.reduce((acc, job) => acc + job.applicants, 0);
+  const totalApplicants = jobs.reduce((acc, job) => acc + job.applicants, 0);
 
-  const filteredJobs = jobList
+  // --- 4. FILTERING ---
+  const filteredJobs = jobs
     .filter((job) => {
       if (activeTab !== "All" && job.status !== activeTab) return false;
       const matchesSearch = job.role
@@ -126,6 +149,7 @@ const JobDashboard = () => {
 
   return (
     <div className="p-8 w-full max-w-7xl mx-auto font-sans text-gray-900 bg-gray-50 min-h-screen">
+      {/* Top Header & Create Button */}
       <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2 text-gray-900">
@@ -138,6 +162,7 @@ const JobDashboard = () => {
         </button>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         <StatsCard
           title="Open Positions"
@@ -169,6 +194,7 @@ const JobDashboard = () => {
         />
       </div>
 
+      {/* Filters */}
       <FilterBar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -178,18 +204,21 @@ const JobDashboard = () => {
         setSelectedTypes={setSelectedTypes}
       />
 
+      {/* Tabs & Sort */}
       <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
         {activeTab === "All" ? "All Jobs" : `${activeTab} Jobs`}
         <span className="text-xs font-normal text-orange-600 bg-orange-50 border border-orange-100 px-2 py-1 rounded-full">
           {filteredJobs.length}
         </span>
       </h2>
+
       <div className="flex justify-between items-center mb-6">
         <JobTabs
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           counts={counts}
         />
+
         <button
           onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
           className="flex items-center gap-2 text-sm font-medium text-gray-500 bg-white border border-gray-200 px-3 py-2 rounded-lg shadow-sm hover:border-gray-300 hover:text-gray-700 transition-all"
@@ -202,15 +231,21 @@ const JobDashboard = () => {
           <span className="hidden sm:inline">Sort</span>
         </button>
       </div>
+
+      {/* Job Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredJobs.map((job, index) => (
+        {filteredJobs.map((job) => (
           <JobCard
-            key={index}
+            key={job.id}
+            id={job.id} // Passing ID
             title={job.role}
             location={job.location}
             type={job.type}
-            status={job.status as "Published" | "Closed" | "On Hold"}
+            status={job.status as "Published" | "Closed" }
             applicantCount={job.applicants}
+            onStatusChange={(newStatus) =>
+              handleJobStatusChange(job.id, newStatus)
+            } // <--- Passing Function
           />
         ))}
       </div>
