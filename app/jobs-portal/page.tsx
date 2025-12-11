@@ -139,21 +139,20 @@ const JobsPortalPage = () => {
             <div className="col-span-12 lg:col-span-6 space-y-4">
               {jobs.map((job) => (
                 <div key={job.id} onClick={() => setSelectedJobId(job.id)}>
-                  {/* NOTE: I'm assuming your existing JobCard accepts an 'onClick'. 
-                      If not, wrap it in a div like this.
-                      I'm passing formatted data to match what JobCard expects based on previous chats.
-                   */}
+                 
                   <JobCard
+                    onClick={() => setSelectedJobId(job.id)}
                     data={{
                       role: job.title,
                       company: job.company,
-                      postedDays: 1, // simplified
-                      matchScore: job.matchPercentage,
+                      postedAgo: job.postedAgo,
                       description: job.description,
-                      tags: job.skills.required.slice(0, 3),
+                      tags: job.skills.required.slice(0, 3), 
                       experience: job.experience,
                       salary: job.salary,
                       location: job.location,
+                     
+                      skills: job.skills,
                     }}
                   />
                 </div>
