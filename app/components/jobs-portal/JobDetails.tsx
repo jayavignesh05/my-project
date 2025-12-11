@@ -204,7 +204,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   className={`h-full rounded-full transition-all duration-1000 ${
                     isEligible
                       ? "bg-green-500"
-                      : "bg-gradient-to-r from-orange-400 to-orange-600"
+                      : "bg-linear-to-r from-orange-400 to-orange-600"
                   }`}
                   style={{ width: `${calculatedPercentage}%` }}
                 ></div>
