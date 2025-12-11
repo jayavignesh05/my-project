@@ -4,7 +4,7 @@ export const jobList = [
     description: "Lead UI development using React, TypeScript, and Tailwind.",
     location: "Chennai",
     type: "Full time",
-    status: "Published",
+    status: "closed",
     applicants: 39,
     salaryMin: 20000,
     salaryMax: 30000,
