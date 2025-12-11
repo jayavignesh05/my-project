@@ -7,9 +7,12 @@ import {
   ArrowRight,
   Building2,
   CheckCircle,
+  Pencil,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export interface JobCardProps {
+  index: number;
   title: string;
   location: string;
   type: string;
@@ -17,9 +20,11 @@ export interface JobCardProps {
   applicantCount?: number;
   customFooterText?: string;
   customActionText?: string;
+  onClick?: () => void;
 }
 
 const JobCard = ({
+  index,
   title,
   location,
   type,
@@ -27,41 +32,59 @@ const JobCard = ({
   applicantCount,
   customFooterText,
   customActionText,
+  onClick,
 }: JobCardProps) => {
   const isPublished = status === "Published";
   const finalActionText =
     customActionText || (isPublished ? "View Applicants" : "Complete");
   const isCompleteAction = finalActionText === "Complete";
+  const router = useRouter();
 
   return (
     <div className="group bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:shadow-orange-500/5 hover:-translate-y-1 hover:border-orange-100 transition-all duration-300  flex flex-col h-full">
       <div className="flex justify-between items-start mb-4">
         <div
-          className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shadow-sm transition-colors duration-300 ${isPublished
+          className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shadow-sm transition-colors duration-300 ${
+            isPublished
               ? "bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white"
               : "bg-gray-50 text-gray-400 group-hover:bg-gray-100"
-            }`}
+          }`}
         >
           <Building2 size={20} />
         </div>
 
         <div
-          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border tracking-wide uppercase ${isPublished
+          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border tracking-wide uppercase ${
+            isPublished
               ? "bg-green-50 text-green-700 border-green-100"
               : "bg-gray-50 text-gray-400 border-gray-100"
-            }`}
+          }`}
         >
           {status}
         </div>
       </div>
 
       <div className="mb-4">
-        <h3
-          className={`text-lg font-bold text-gray-900 leading-tight mb-2 transition-colors ${isPublished ? "group-hover:text-orange-600" : ""
+        <div className="flex items-center gap-2 mb-2">
+          <h3
+            className={`text-lg font-bold text-gray-900 leading-tight transition-colors ${
+              isPublished ? "group-hover:text-orange-600" : ""
             }`}
-        >
-          {title}
-        </h3>
+          >
+            {title}
+          </h3>
+
+          {/* EDIT ICON */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/JobPostForm/${index}`);
+            }}
+            className="text-gray-400 hover:text-orange-600 transition p-1"
+          >
+            <Pencil size={14} />
+          </button>
+        </div>
 
         <div className="flex flex-wrap gap-2 text-xs text-gray-500">
           <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
@@ -96,18 +119,14 @@ const JobCard = ({
             </>
           )}
         </div>
-        <Link href="/applicants" >
-
+        <Link href="/applicants">
           {isCompleteAction ? (
             <button className="flex items-center gap-1 text-xs font-bold text-gray-500 bg-gray-50 hover:bg-green-50 hover:text-green-600 hover:border-green-100 border border-transparent px-3 py-1.5 rounded-lg transition-all duration-300 cursor-pointer">
               {finalActionText}
               <CheckCircle size={12} />
             </button>
           ) : (
-            <button
-
-              className="flex items-center gap-1 text-xs font-bold text-orange-600 bg-orange-50 hover:bg-orange-600 hover:text-white px-3 py-1.5 rounded-lg transition-all duration-300 cursor-pointer"
-            >
+            <button className="flex items-center gap-1 text-xs font-bold text-orange-600 bg-orange-50 hover:bg-orange-600 hover:text-white px-3 py-1.5 rounded-lg transition-all duration-300 cursor-pointer">
               {finalActionText}
               <ArrowRight size={12} />
             </button>
