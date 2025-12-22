@@ -1,7 +1,7 @@
 "use client"; // <--- 1. Add this at the top
 import React from "react";
 // Added 'Globe' icon for the portal
-import { Briefcase, LogOut, Globe } from "lucide-react";
+import { Briefcase, LogOut, Globe, FileText } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // <--- 2. Import this
 
@@ -32,6 +32,13 @@ const Sidebar = () => {
           label="Jobs Portal"
           href="/jobs-portal" // This must match the folder name inside 'app'
           isActive={pathname === "/jobs-portal"}
+        />
+
+        <NavItem
+          icon={<FileText size={20} />}
+          label="Job Opening"
+          href="/job-opening"
+          isActive={pathname === "/job-opening"}
         />
       </nav>
 
