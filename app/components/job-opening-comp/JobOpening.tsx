@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   MapPin,
   Banknote,
@@ -10,7 +10,7 @@ import {
   GraduationCap,
   Users,
   Briefcase,
-  Building2, // Imported the Company Icon
+  Building2,
 } from "lucide-react";
 
 // --- Types ---
@@ -28,50 +28,95 @@ interface Job {
   status?: number;
 }
 
-interface ApiResponse {
-  status: number;
-  data: {
-    aaData: Job[];
-  };
-  message?: string;
-}
-
 const JobPortal = () => {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  // --- STATIC DATA (Replaces API) ---
+  const staticJobs: Job[] = [
+    {
+      company_name: "CADD Centre",
+      post_type: "Internship",
+      job_title: "Full Stack Developer Intern",
+      job_location: "Chennai",
+      education_qualification: "BE/B.Tech (CSE/IT)",
+      Industry: "EdTech",
+      stipend: "15,000 - 20,000",
+      no_of_openings: 5,
+      created_at: "2025-12-19T11:50:26.000Z",
+      last_registration_date: "2025-12-30T18:30:00.000Z",
+      status: 1,
+    },
+    {
+      company_name: "Dreamzone",
+      post_type: "Fulltime Job",
+      job_title: "Senior UI/UX Designer",
+      job_location: "Bangalore",
+      education_qualification: "B.Des / Any Degree",
+      Industry: "Creative Design",
+      stipend: "45,000 - 60,000",
+      no_of_openings: 3,
+      created_at: "2025-12-18T11:50:26.000Z",
+      last_registration_date: "2025-12-28T18:30:00.000Z",
+      status: 1,
+    },
+    {
+      company_name: "Synergy",
+      post_type: "Internship",
+      job_title: "Project Management Trainee",
+      job_location: "Mumbai",
+      education_qualification: "MBA / PGDM",
+      Industry: "Management",
+      stipend: "20,000 - 25,000",
+      no_of_openings: 8,
+      created_at: "2025-12-19T10:00:00.000Z",
+      last_registration_date: "2026-01-05T18:30:00.000Z",
+      status: 1,
+    },
+    {
+      company_name: "Livewire",
+      post_type: "Fulltime Job",
+      job_title: "Data Science Associate",
+      job_location: "Hyderabad",
+      education_qualification: "B.Tech / M.Sc Data Science",
+      Industry: "IT Services",
+      stipend: "40,000 - 55,000",
+      no_of_openings: 12,
+      created_at: "2025-12-15T11:50:26.000Z",
+      last_registration_date: "2025-12-31T18:30:00.000Z",
+      status: 1,
+    },
+    {
+      company_name: "CADD Centre",
+      post_type: "Internship",
+      job_title: "Digital Marketing Executive",
+      job_location: "Coimbatore",
+      education_qualification: "BBA / Any Arts",
+      Industry: "Marketing",
+      stipend: "12,000 - 18,000",
+      no_of_openings: 15,
+      created_at: "2025-12-19T11:50:26.000Z",
+      last_registration_date: "2026-01-10T18:30:00.000Z",
+      status: 1,
+    },
+    {
+      company_name: "Tech Solutions",
+      post_type: "Fulltime Job",
+      job_title: "React Native Developer",
+      job_location: "Remote",
+      education_qualification: "B.E / B.Tech",
+      Industry: "Software",
+      stipend: "60,000 - 80,000",
+      no_of_openings: 2,
+      created_at: "2025-12-10T11:50:26.000Z",
+      last_registration_date: "2025-12-25T18:30:00.000Z",
+      status: 1,
+    },
+  ];
+
+  // Initialize state directly with static data
+  const [jobs, setJobs] = useState<Job[]>(staticJobs);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchJobs = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("http://localhost:2000/api/job_view", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          source: "list_view_jobs",
-        }),
-      });
-
-      const result: ApiResponse = await response.json();
-      if (result.status === 200 && result.data && result.data.aaData) {
-        setJobs(result.data.aaData);
-      } else {
-        setJobs([]);
-      }
-    } catch (err) {
-      setError("Failed to connect to API");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
+  // Helper: Date Formatter
   const formatDate = (dateString: string | undefined): string => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -90,9 +135,6 @@ const JobPortal = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         
-        {/* Header */}
-        
-
         {/* Loading */}
         {loading && (
           <div className="flex justify-center items-center h-64">
@@ -126,8 +168,6 @@ const JobPortal = () => {
                       
                       {/* Logo + Company Name Block */}
                       <div className="flex items-center gap-3">
-                        {/* CHANGED: Using static Building2 Icon instead of Letter 
-                        */}
                         <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-orange-100 flex items-center justify-center text-orange-500">
                           <Building2 size={24} />
                         </div>

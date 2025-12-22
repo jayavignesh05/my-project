@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
-  
   const pathname = usePathname();
   return (
     <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col p-6 fixed left-0 top-0">
@@ -38,6 +37,13 @@ const Sidebar = () => {
           label="Job Opening"
           href="/job-opening"
           isActive={pathname === "/job-opening"}
+        />
+
+        <NavItem
+          icon={<FileText size={20} />}
+          label="Job Opening 2"
+          href="/job-opening-2"
+          isActive={pathname === "/job-opening-2"}
         />
       </nav>
 
