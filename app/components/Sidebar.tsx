@@ -1,13 +1,12 @@
-"use client"; // <--- 1. Add this at the top
+"use client";
 import React from "react";
-// Added 'Globe' icon for the portal
-import { Briefcase, LogOut, Globe } from "lucide-react";
+import { Briefcase, LogOut, Globe, FileText } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // <--- 2. Import this
+import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
-  // You can change this string to test different active states
-  const pathname = usePathname(); // <--- 3. Get the real current path
+  
+  const pathname = usePathname();
   return (
     <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col p-6 fixed left-0 top-0">
       <div className="mb-12 flex flex-col items-start font-bold text-red-700 leading-tight">
@@ -32,6 +31,13 @@ const Sidebar = () => {
           label="Jobs Portal"
           href="/jobs-portal" // This must match the folder name inside 'app'
           isActive={pathname === "/jobs-portal"}
+        />
+
+        <NavItem
+          icon={<FileText size={20} />}
+          label="Job Opening"
+          href="/job-opening"
+          isActive={pathname === "/job-opening"}
         />
       </nav>
 
