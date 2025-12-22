@@ -261,30 +261,6 @@ export default function ApplicantDetails({ applicant, onStatusChange }: Props) {
           })}
         </div>
 
-        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-          User Skills
-        </h3>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {userSkills.map((skill) => {
-            const matched = requiredSkills.includes(skill);
-
-            return (
-            <div
-              key={skill}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-medium ${
-                  matched
-                    ? "bg-purple-50 border-purple-200 text-purple-700"
-                    : "bg-gray-50 border-gray-200 text-gray-500"
-                }`}
-              >
-                {skill}
-                {matched && <FaCheck className="text-purple-600 text-[10px]" />}
-              </div>
-             );
-          })}
-        </div>
-
-        {/* Skill Match Bar */}
         <div className="mt-4 bg-gray-50 p-3 rounded-xl border border-gray-100">
           <div className="flex justify-between items-center mb-1">
             <p className="text-xs font-bold text-gray-600">Match Score</p>
@@ -297,15 +273,6 @@ export default function ApplicantDetails({ applicant, onStatusChange }: Props) {
             ></div>
           </div>
         </div>
-
-        <p className="text-gray-700 text-xs mt-2">
-          Candidate has{" "}
-          <span className="font-bold">
-            {requiredSkills.filter((s) => userSkills.includes(s)).length}
-          </span>{" "}
-          out of <span className="font-bold">{requiredSkills.length}</span>{" "}
-          required skills.
-        </p>
       </div>
 
       <div className="my-6 border-b border-gray-100"></div>
